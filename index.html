@@ -195,7 +195,7 @@
             if (timerId) {
                 timers.push({
                     id: timerId,
-                    timeLeft: 1 * 60,
+                    timeLeft: 15 * 60,
                     isRunning: true
                 });
                 input.value = '';
@@ -212,7 +212,7 @@
 
         function restartTimer(index) {
             initAudioContext();
-            timers[index].timeLeft = 1 * 60;
+            timers[index].timeLeft = 15 * 60;
             timers[index].isRunning = true;
             updateTimerDisplay();
         }
@@ -221,7 +221,7 @@
             initAudioContext();
             timers = timers.map(timer => ({
                 ...timer,
-                timeLeft: 1 * 60,
+                timeLeft: 15 * 60,
                 isRunning: true
             }));
             updateTimerDisplay();
