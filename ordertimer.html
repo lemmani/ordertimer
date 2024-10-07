@@ -48,7 +48,6 @@
             border-radius: 0.375rem;
             width: 100%;
         }
-        /* Alert styles */
         .alert {
             position: fixed;
             top: 1rem;
@@ -89,6 +88,12 @@
             </button>
         </div>
 
+        <div id="notificationPermission" class="mb-4 hidden">
+            <button onclick="requestNotificationPermission()" class="button button-primary w-full">
+                <i class="fas fa-bell mr-2"></i>Enable Notifications
+            </button>
+        </div>
+
         <div id="timerContainer" class="space-y-4">
             <!-- Timers will be added here -->
         </div>
@@ -100,6 +105,34 @@
         let timers = [];
         let audioContext = null;
         let isSoundEnabled = true;
+
+        // Check notification permission on load
+        document.addEventListener('DOMContentLoaded', function() {
+            if ("Notification" in window) {
+                if (Notification.permission !== "granted" && Notification.permission !== "denied") {
+                    document.getElementById('notificationPermission').classList.remove('hidden');
+                }
+            }
+        });
+
+        function requestNotificationPermission() {
+            if ("Notification" in window) {
+                Notification.requestPermission().then(function(permission) {
+                    if (permission === "granted") {
+                        document.getElementById('notificationPermission').classList.add('hidden');
+                    }
+                });
+            }
+        }
+
+        function sendNotification(message) {
+            if ("Notification" in window && Notification.permission === "granted") {
+                new Notification("Timer Complete", {
+                    body: message,
+                    icon: "https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/svg/23f0.svg"
+                });
+            }
+        }
 
         function initAudioContext() {
             if (!audioContext) {
@@ -117,10 +150,12 @@
             `;
             alertContainer.appendChild(alertElement);
 
-            // Remove the alert after 5 seconds
             setTimeout(() => {
                 alertElement.remove();
             }, 5000);
+
+            // Send system notification
+            sendNotification(message);
         }
 
         function playAlarm() {
@@ -160,7 +195,7 @@
             if (timerId) {
                 timers.push({
                     id: timerId,
-                    timeLeft: 15 * 60,
+                    timeLeft: 1 * 60,
                     isRunning: true
                 });
                 input.value = '';
@@ -177,7 +212,7 @@
 
         function restartTimer(index) {
             initAudioContext();
-            timers[index].timeLeft = 15 * 60;
+            timers[index].timeLeft = 1 * 60;
             timers[index].isRunning = true;
             updateTimerDisplay();
         }
@@ -186,7 +221,7 @@
             initAudioContext();
             timers = timers.map(timer => ({
                 ...timer,
-                timeLeft: 15 * 60,
+                timeLeft: 1 * 60,
                 isRunning: true
             }));
             updateTimerDisplay();
